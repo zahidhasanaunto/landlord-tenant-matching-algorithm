@@ -450,111 +450,6 @@ const tenant_preferences = {
   furnish_types: [1, 2, 3],
 };
 
-function calculateFurnishTypeScore(
-  tenantFurnishType,
-  propertyFurnishType,
-  criteriaWeight
-) {
-  if (tenantFurnishType === propertyFurnishType) {
-    let furnishTypeWeight = criteriaWeight.furnish_type.criteria.find(
-      (c) => c.id === tenantFurnishType
-    ).weight;
-    return furnishTypeWeight;
-  } else {
-    return 0;
-  }
-}
-
-function calculateUtilityCostScore(
-  tenantUtilityCostPreference,
-  propertyUtilityCost,
-  criteriaWeight
-) {
-  if (tenantUtilityCostPreference === propertyUtilityCost) {
-    let utilityCostWeight = criteriaWeight.utility_cost.criteria.find(
-      (c) => c.id === tenantUtilityCostPreference
-    ).weight;
-    return utilityCostWeight;
-  } else {
-    return 0;
-  }
-}
-
-function calculateBackgroundScore(
-  tenantBackground,
-  propertyBackgroundRequirement,
-  criteriaWeight
-) {
-  if (tenantBackground >= propertyBackgroundRequirement) {
-    let backgroundWeight = criteriaWeight.background.criteria.find(
-      (c) => c.id === tenantBackground
-    ).weight;
-    return backgroundWeight;
-  } else {
-    return 0;
-  }
-}
-
-function calculatePetsPolicyScore(
-  tenantPetsPolicy,
-  propertyPetsPolicy,
-  criteriaWeight
-) {
-  if (tenantPetsPolicy === propertyPetsPolicy) {
-    let petsPolicyWeight = criteriaWeight.pets_policy.criteria.find(
-      (c) => c.id === tenantPetsPolicy
-    ).weight;
-    return petsPolicyWeight;
-  } else {
-    return 0;
-  }
-}
-
-function calculateParkingTypeScore(
-  tenantParkingType,
-  propertyParkingType,
-  criteriaWeight
-) {
-  if (tenantParkingType === propertyParkingType) {
-    let parkingWeight = criteriaWeight.parking_type.criteria.find(
-      (c) => c.id === tenantParkingType
-    ).weight;
-    return parkingWeight;
-  } else {
-    return 0;
-  }
-}
-
-function calculateLeaseTermScore(
-  tenantLeaseTerms,
-  propertyLeaseTerm,
-  criteriaWeight
-) {
-  if (tenantLeaseTerms.includes(propertyLeaseTerm)) {
-    let leaseTermWeight = criteriaWeight.lease_term.criteria.find(
-      (c) => c.id === propertyLeaseTerm
-    ).weight;
-    return leaseTermWeight;
-  } else {
-    return 0;
-  }
-}
-
-function calculateEmploymentTypeScore(
-  tenantEmploymentType,
-  propertyEmploymentTypes,
-  criteriaWeight
-) {
-  if (propertyEmploymentTypes.includes(tenantEmploymentType)) {
-    let employmentWeight = criteriaWeight.employment_type.criteria.find(
-      (c) => c.id === tenantEmploymentType
-    ).weight;
-    return employmentWeight;
-  } else {
-    return 0;
-  }
-}
-
 function calculateAmenitiesScore(
   tenantAmenities,
   propertyAmenities,
@@ -657,29 +552,6 @@ function calculatePropertyAgeScore(
   return propertyAgeScore;
 }
 
-function calculateSecurityScore(
-  tenantSecurities,
-  propertySecurities,
-  criteriaWeight
-) {
-  let score = 0;
-  const maxPossibleScore = criteriaWeight.security.criteria.reduce(
-    (acc, cur) => acc + cur.weight,
-    0
-  );
-
-  tenantSecurities.forEach((tenantSecurity) => {
-    if (propertySecurities.includes(tenantSecurity)) {
-      let securityWeight = criteriaWeight.security.criteria.find(
-        (c) => c.id === tenantSecurity
-      ).weight;
-      score += securityWeight;
-    }
-  });
-
-  return (score / maxPossibleScore) * 100;
-}
-
 function calculateScore(property, tenantPreferences, criteriaWeight) {
   let score = 0;
 
@@ -710,56 +582,6 @@ function calculateScore(property, tenantPreferences, criteriaWeight) {
     criteriaWeight
   );
   score += (amenitiesScore * criteriaWeight.amenities.weight) / 100;
-
-  let securityScore = calculateSecurityScore(
-    tenantPreferences.securities,
-    property.securities,
-    criteriaWeight
-  );
-  score += (securityScore * criteriaWeight.security.weight) / 100;
-
-  let employmentTypeScore = calculateEmploymentTypeScore(
-    tenantPreferences.employment_type,
-    property.employment_types,
-    criteriaWeight
-  );
-
-  score += (employmentTypeScore * criteriaWeight.employment_type.weight) / 100;
-
-  let parkingTypeScore = calculateParkingTypeScore(
-    tenantPreferences.parking_type,
-    property.parking_type,
-    criteriaWeight
-  );
-  score += (parkingTypeScore * criteriaWeight.parking_type.weight) / 100;
-
-  let leaseTermScore = calculateLeaseTermScore(
-    tenantPreferences.lease_terms,
-    property.lease_terms,
-    criteriaWeight
-  );
-  score += (leaseTermScore * criteriaWeight.lease_term.weight) / 100;
-
-  let petsPolicyScore = calculatePetsPolicyScore(
-    tenantPreferences.pets_policy,
-    property.pets_policy,
-    criteriaWeight
-  );
-  score += (petsPolicyScore * criteriaWeight.pets_policy.weight) / 100;
-
-  let backgroundScore = calculateBackgroundScore(
-    tenantPreferences.background,
-    property.background,
-    criteriaWeight
-  );
-  score += (backgroundScore * criteriaWeight.background.weight) / 100;
-
-  //   let utilityCostScore = calculateUtilityCostScore(
-  //     tenantPreferences.utility_costs,
-  //     property.utility_cost,
-  //     criteriaWeight
-  //   );
-  //   score += (utilityCostScore * criteriaWeight.utility_cost.weight) / 100;
 
   return score;
 }
